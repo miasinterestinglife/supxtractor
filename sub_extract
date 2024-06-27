@@ -8,10 +8,11 @@ for file in *.mkv; do
 		tracks=()
 		tracks+=$(ffprobe "$file" -v quiet -print_format json -show_format -show_streams | jq '.streams[] | select(.codec_name=="hdmv_pgs_subtitle") | select(.tags.language=="'$lang'") | .index')
 		idx=1
+		#extract tracks
 		for track in $tracks; do
 			echo ${file%.*} - ${lang}:
 			$(ffmpeg -v quiet -stats -i "$file" -map 0:$track -c:s copy "${file%.*}-${lang}-${idx}.sup")
-			idx+=1
+			let "idx+=1"
 		done
 	done
 done
